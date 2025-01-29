@@ -1,5 +1,5 @@
 
-const getTest = (req, res) => {
+const getTest = async(req, res) => {
   res.send('esto es un test');
 }
 
