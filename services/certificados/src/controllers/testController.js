@@ -1,6 +1,6 @@
 
 const getTest = (req, res) => {
-  res.send('Hello World');
+  res.send('esto es un test');
 }
 
 module.exports = {
