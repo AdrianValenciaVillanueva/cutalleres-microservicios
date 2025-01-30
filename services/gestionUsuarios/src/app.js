@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 //importar rutas
 const testRoute = require('./routes/test');
+const usersRoute = require('./routes/users');
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use(express.json());//para que entienda json
 
 //rutas
 app.use("/test", testRoute);
+app.use("/users", usersRoute);
 
 module.exports = app;
