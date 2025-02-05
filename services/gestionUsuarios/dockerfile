@@ -1,0 +1,19 @@
+#usamos node
+FROM node:18
+
+WORKDIR /app
+
+#copiamos el package.json
+COPY package*.json ./
+
+# Instalamos las dependencias
+RUN npm install
+
+# Copiamos el resto del código del microservicio
+COPY . .
+
+# Exponemos el puerto en el que corre el microservicio
+EXPOSE 3001
+
+# Comando para correr la app
+CMD ["node", "server.js"]
