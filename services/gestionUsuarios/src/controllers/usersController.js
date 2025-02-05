@@ -1,6 +1,16 @@
+const db = require('../../models');
 
 const createUser = async (req, res) => {
-    res.send("Usuario creado");
+    try{
+        const usuario = await db.Usuario.create({
+            codigo_udg: req.body.codigo_udg,
+            correo: req.body.correo,
+            contrasena: req.body.contrasena
+        });
+        res.status(201).json(usuario);
+    }catch(error){
+        res.status(500).json({error: "Error al crear usuario"});
+    }
 };
 
 const getUser = async (req, res) => {

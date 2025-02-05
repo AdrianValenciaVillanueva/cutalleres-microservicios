@@ -8,7 +8,7 @@ const {createUser, getUser, updateUser, deleteUser} = require('../controllers/us
 const router = express.Router();
 
 //rutas
-router.get('/create', createUser);
+router.post('/create', createUser);
 router.get('/get', getUser);
 router.get('/update', updateUser);
 router.get('/delete', deleteUser);
