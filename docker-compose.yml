@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # Servicio de base de datos para usuarios
@@ -34,10 +34,10 @@ services:
     container_name: mysql-inscripciones
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: dario500
-      MYSQL_DATABASE: iscripciones-certificados
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: dario500
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: iscripciones_certificaciones
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
     ports:
       - "3309:3306"
     volumes:
@@ -45,15 +45,11 @@ services:
 
   # Microservicio de inscripciones y certificaciones
   inscripcionescertificaciones:
-    build: ./services/iscripciones-certificados
+    build: ./services/iscripciones-certificaciones
     container_name: inscripcionescertificaciones
     restart: always
-    environment:
-      MYSQL_HOST: mysql3
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: dario500
-      MYSQL_DATABASE: iscripciones-certificados
-      PORT: 3003
+    env_file:
+      - ./services/iscripciones-certificaciones/.env
     ports:
       - "3003:3003"
     depends_on:
