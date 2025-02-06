@@ -1,4 +1,7 @@
+version: '3.8'
+
 services:
+  # Servicio de base de datos para usuarios
   mysql:
     image: mysql:8
     container_name: mysql-usuarios
@@ -9,10 +12,11 @@ services:
       MYSQL_USER: usuario
       MYSQL_PASSWORD: password
     ports:
-      - "3308:3306" # Cambiar el puerto si el 3306 está ocupado el primer puerto es el de la máquina y el segundo el del contenedor
+      - "3308:3306"
     volumes:
       - mysql-usuarios-data:/var/lib/mysql
 
+  # Microservicio de gestión de usuarios
   gestionusuarios:
     image: gestionusuarios
     container_name: gestionusuarios
@@ -24,5 +28,37 @@ services:
     depends_on:
       - mysql    
 
+  # Servicio de base de datos para inscripciones
+  mysql3:
+    image: mysql:8
+    container_name: mysql-inscripciones
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: dario500
+      MYSQL_DATABASE: iscripciones-certificados
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: dario500
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-inscripciones-data:/var/lib/mysql
+
+  # Microservicio de inscripciones y certificaciones
+  inscripcionescertificaciones:
+    image: inscripcionescertificaciones
+    container_name: inscripcionescertificaciones
+    restart: always
+    environment:
+      MYSQL_HOST: mysql3
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: dario500
+      MYSQL_DATABASE: iscripciones-certificados
+      PORT: 3003
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mysql3    
+
 volumes:
   mysql-usuarios-data:
+  mysql-inscripciones-data:
