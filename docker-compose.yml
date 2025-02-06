@@ -18,7 +18,7 @@ services:
 
   # Microservicio de gestión de usuarios
   gestionusuarios:
-    image: gestionusuarios
+    build: ./services/gestionUsuarios
     container_name: gestionusuarios
     restart: always
     env_file:
@@ -45,7 +45,7 @@ services:
 
   # Microservicio de inscripciones y certificaciones
   inscripcionescertificaciones:
-    image: inscripcionescertificaciones
+    build: ./services/iscripciones-certificados
     container_name: inscripcionescertificaciones
     restart: always
     environment:
