@@ -12,7 +12,7 @@ services:
       MYSQL_USER: usuario
       MYSQL_PASSWORD: password
     ports:
-      - "3308:3306"
+      - "3307:3306"
     volumes:
       - mysql-usuarios-data:/var/lib/mysql
 
@@ -35,11 +35,11 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: iscripciones_certificaciones
+      MYSQL_DATABASE: inscripciones_certificaciones
       MYSQL_USER: usuario
       MYSQL_PASSWORD: password
     ports:
-      - "3309:3306"
+      - "3308:3306"
     volumes:
       - mysql-inscripciones-data:/var/lib/mysql
 
