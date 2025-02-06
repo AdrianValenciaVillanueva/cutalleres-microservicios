@@ -14,7 +14,7 @@ services:
       - mysql-usuarios-data:/var/lib/mysql
 
   gestionusuarios:
-    build: ./services/gestionUsuarios
+    image: gestionusuarios
     container_name: gestionusuarios
     restart: always
     env_file:
