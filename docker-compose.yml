@@ -13,5 +13,16 @@ services:
     volumes:
       - mysql-usuarios-data:/var/lib/mysql
 
+  gestionusuarios:
+    build: ./services/gestionUsuarios
+    container_name: gestionusuarios
+    restart: always
+    env_file:
+      - ./services/gestionUsuarios/.env
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql    
+
 volumes:
   mysql-usuarios-data:
