@@ -15,7 +15,7 @@ const createUser = async (req, res) => {
     }
 };
 
-const getUser = async (req, res) => {
+const getUsers = async (req, res) => {
     try{
         const usuarios = await db.Usuario.findAll();
         res.status(200).json(usuarios);
@@ -32,4 +32,4 @@ const deleteUser = async (req, res) => {
     res.send("Usuario eliminado");
 }
 
-module.exports = { createUser, getUser, updateUser, deleteUser };
+module.exports = { createUser, getUsers, updateUser, deleteUser };

@@ -15,9 +15,22 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       }
-    }, {
+    },
+    
+    {
       tableName: 'usuarios',
-      timestamps: false 
+      timestamps: false ,
+      
+      defaultScope:{
+        attributes: {exclude: ['contrasena']} //para que no se muestre la contraseña en las consultas
+      },
+      
+      scopes:{//para que se muestre la contraseña en la consulta
+        withPassword: {
+          attributes: {}
+        }
+      }
+
     });
   
     return Usuario;
