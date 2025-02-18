@@ -10,7 +10,8 @@ const createUser = async (req, res) => {
             correo: req.body.correo,
             contrasena: hashedPassword
         });
-        res.status(201).json(usuario);
+        const {contrasena, ...userWithoutPassword} = usuario.toJSON();
+        res.status(201).json(userWithoutPassword);
     }catch(error){
         res.status(500).json({error: "Error al crear usuario"});
     }
