@@ -55,11 +55,53 @@ const loginUser = async (req,res) => {
 }
 
 const updateUser = async (req, res) => {
-    res.send("Usuario actualizado");
+    try{
+        const usuario = await db.Usuario.scope("withPassword").findOne({
+            where:{
+                codigo_udg: req.body.codigo_udg
+            }
+        });
+        if(!usuario){
+            return res.status(404).json({error: "Usuario no encontrado"});
+        }
+        
+        const updates = {
+            correo: req.body.correo,
+            codigo_udg: req.body.codigo_udg
+        };
+        if(req.body.contrasena){
+            const hashedPassword = await bcrypt.hash(req.body.contrasena, 10);
+            updates.contrasena = hashedPassword;
+        }
+
+        await usuario.update(updates);
+
+        const {contrasena, ...userWithoutPassword} = usuario.toJSON();
+        return res.status(200).json(userWithoutPassword);
+    
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({error: "Error al actualizar usuario"});
+    }
 }
 
 const deleteUser = async (req, res) => {
-    res.send("Usuario eliminado");
+    try{
+        const usuario = await db.Usuario.findOne({
+            where:{
+                codigo_udg: req.body.codigo_udg
+            }
+        });
+        if(!usuario){
+            return res.status(404).json({error: "Usuario no encontrado"});
+        }
+        await usuario.destroy();
+        return res.status(200).json({message: "Usuario eliminado"});
+        
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({error: "Error al eliminar usuario"});
+    }
 }
 
 module.exports = { createUser, getUsers,loginUser, updateUser, deleteUser };
