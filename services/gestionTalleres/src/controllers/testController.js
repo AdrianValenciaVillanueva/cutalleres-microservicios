@@ -1,6 +1,6 @@
-
+// Archivo para crear constantes de testeo
 const getTest = async (req, res) => {
-  res.send('esto es un test micro servicio2');
+  res.send('Test del microservicio "gesionTalleres" ');
 }
 
 module.exports = {getTest}
