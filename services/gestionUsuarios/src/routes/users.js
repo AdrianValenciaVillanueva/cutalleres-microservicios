@@ -2,13 +2,14 @@
 const express = require('express');
 
 //obtener el controlador
-const {createUser, getUsers, updateUser, deleteUser} = require('../controllers/usersController');
+const {createUser, getUsers,loginUser, updateUser, deleteUser} = require('../controllers/usersController');
 
 //crear el router
 const router = express.Router();
 
 //rutas
 router.post('/create', createUser);
+router.post('/login', loginUser);
 router.get('/getall', getUsers);
 router.get('/update', updateUser);
 router.get('/delete', deleteUser);
