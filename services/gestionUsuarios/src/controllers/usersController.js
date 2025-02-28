@@ -1,7 +1,6 @@
 const db = require('../../models');
 const bcrypt = require('bcrypt');
-const { use } = require('../routes/users');
-
+const jwt = require('jsonwebtoken');
 const createUser = async (req, res) => {
     try{
         const hashedPassword = await bcrypt.hash(req.body.contrasena, 10);
@@ -43,6 +42,10 @@ const loginUser = async (req,res) => {
 
         if(contrasenaValida){
             const { contrasena, ...userWithoutPassword } = usuario.toJSON();//desestructacion del objeto usuario para ocultar la contrasena
+            //crear token
+            const token = jwt.sign(userWithoutPassword, process.env.JWT_SECRET, {expiresIn: '1h'});
+
+            res.setHeader('Authorization', `Bearer ${token}`);
             return res.status(200).json(userWithoutPassword);
         }else{
             return res.status(401).json({error: "Contraseña incorrecta"});

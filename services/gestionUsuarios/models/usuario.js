@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       contrasena: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      rol: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'user'
       }
     },
     

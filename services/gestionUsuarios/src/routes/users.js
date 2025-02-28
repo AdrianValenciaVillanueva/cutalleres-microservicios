@@ -4,15 +4,17 @@ const express = require('express');
 //obtener el controlador
 const {createUser, getUsers,loginUser, updateUser, deleteUser} = require('../controllers/usersController');
 
+//importar el middleware
+const authenticateUsers = require('../../middlewares/authenticateUsers');
 //crear el router
 const router = express.Router();
 
 //rutas
 router.post('/create', createUser);
 router.post('/login', loginUser);
-router.get('/getall', getUsers);
-router.patch('/update', updateUser);
-router.delete('/delete', deleteUser);
+router.get('/getall', authenticateUsers,getUsers);
+router.patch('/update', authenticateUsers,updateUser);
+router.delete('/delete', authenticateUsers,deleteUser);
 
 module.exports = router;
 
