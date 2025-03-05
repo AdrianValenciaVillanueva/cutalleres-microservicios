@@ -95,11 +95,21 @@ const deleteUser = async (req, res) => {
                 codigo_udg: req.body.codigo_udg
             }
         });
-        if(!usuario){
-            return res.status(404).json({error: "Usuario no encontrado"});
+        const infoUsuario = await db.Registro.findOne({
+            where:{
+                codigo_udg: req.body.codigo_udg
+            }
+        });
+        if(usuario){
+            await usuario.destroy();
+            return res.status(204).send();
         }
-        await usuario.destroy();
-        return res.status(200).json({message: "Usuario eliminado"});
+        if(infoUsuario){
+            await infoUsuario.destroy();
+        }
+        return res.status(404).json({error: "Usuario no encontrado"});
+        
+        
         
     }catch(error){
         console.log(error);
