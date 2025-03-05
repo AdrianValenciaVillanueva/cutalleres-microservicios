@@ -9,7 +9,7 @@ const router = express.Router();
 
 //rutas de los metodos establecidos en el controlador
 router.post('/createTaller', createTaller);
-router.get('/getTaller', getTaller);
+router.get('/getTaller/:id', getTaller);
 router.get('/updateTaller', updateTaller);
 router.get('/deleteTaller', deleteTaller);
 

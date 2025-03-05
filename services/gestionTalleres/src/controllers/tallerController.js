@@ -13,7 +13,20 @@ const createTaller = async (req, res) => {
 };
 
 const getTaller = async (req, res) => {
-    res.send("Taller obtenido");
+    try {
+        const id = req.params.id; // Obtenemos el ID de los parámetros de la URL
+        const taller = await db.GestionTaller.findOne({ 
+            where: { ID_Taller: id } 
+        });
+
+        if (!taller) {
+            return res.status(404).json({ message: "Taller no encontrado" });
+        }
+
+        res.status(200).json(taller); // Enviamos el taller encontrado como respuesta
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener el taller" });
+    }
 }
 
 //Solo prueba
