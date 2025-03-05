@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authenticateUsers = (req, res, next) => {
     // Obtener el token del encabezado
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Separar el Bearer del token
+    const token = authHeader && authHeader.split(' ')[1]; // Separar el texto Bearer del token
 
     // Si no hay token
     if (!token) {
