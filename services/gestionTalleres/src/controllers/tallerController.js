@@ -36,7 +36,31 @@ const updateTaller = async (req, res) => {
 
 //Solo prueba
 const deleteTaller = async(req, res) => {
-    res.send("taller eliminado");
+    try{
+        const { ID_Taller } = req.body;  // Extraer directamente el ID para mejor legibilidad
+
+        //Asigna las constantes de manera ordenada
+        const [tallerDatos, taller] = await Promise.all([
+            db.DatosTaller.findOne({ where: { ID_Taller } }),
+            db.GestionTaller.findOne({ where: { ID_Taller } })
+        ]);
+
+        if(!taller && !tallerDatos){
+            return res.status(404).json({error: "Taller no encontrado en ninguna de las tablas"});
+        } 
+
+        //Primero la tabla con la llave foranea para evitar problemas
+        if(tallerDatos)
+            await tallerDatos.destroy(); //Se elimina la fila de datosTaller si existe
+
+        if(taller)
+            await taller.destroy(); //Se elimina la fila de gestionTaller si existe
+
+        return res.status(200).json({ message: "Taller eliminado correctamente" });       
+        }catch(error){
+            console.log(error);
+            return res.status(500).json({error: "Error al eliminar el taller"});
+        }
 }
 
 module.exports = {createTaller, getTaller, updateTaller, deleteTaller};

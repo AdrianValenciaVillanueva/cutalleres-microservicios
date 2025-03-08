@@ -11,6 +11,6 @@ const router = express.Router();
 router.post('/createTaller', createTaller);
 router.get('/getTaller/:id', getTaller);
 router.get('/updateTaller', updateTaller);
-router.get('/deleteTaller', deleteTaller);
+router.delete('/deleteTaller', deleteTaller);
 
 module.exports = router;

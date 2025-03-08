@@ -1,8 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
     const DatosTaller = sequelize.define('datosTaller', {
-      ID_TALLER: {
+      ID_Taller: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'ID_TALLER', //Field ayuda a que esta variable se acople a ID_TALLER de la BD
         //Establecimiento de la Foreign Key en sequelize
         references: {
           model: 'Gestion_taller', //Nombre de la tabla
