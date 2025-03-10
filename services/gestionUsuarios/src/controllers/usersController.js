@@ -117,4 +117,27 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = { createUser, getUsers,loginUser, updateUser, deleteUser };
+//metodos para llenar informacion de usuario
+const dataUser = async (req,res) => {
+    try{
+        const fullName = req.body.nombre;
+        const  sex = req.body.sexo;
+        const  age = req.body.edad;
+        const  code = req.body.codigo_udg;
+
+        if(code){
+            const data = await db.Registro.create({
+                nombre: fullName,
+                sexo: sex,
+                edad: age,
+                codigo_udg: code
+            });
+            res.status(201).json(data);
+        }
+    }catch(error){
+        
+        return res.status(500).json({error: error});
+    }
+}
+
+module.exports = { createUser, getUsers,loginUser, updateUser, deleteUser,dataUser };
