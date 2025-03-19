@@ -1,18 +1,35 @@
 const db = require('../../models'); //se selecciona la carpeta "models", donde se encuentran los modelos de las 2 tablas de la BD
 
 //Crea un taller
-const createTaller = async (req, res) => {
+const crearTaller = async (req, res) => {
     try{
-        const Taller = await db.GestionTaller.create({
-            ID_Taller: req.body.ID_Taller,
+        //Creación de fila en la primera tabla
+        const taller = await db.GestionTaller.create({
             nombre_taller: req.body.nombre_taller
         });
 
-        res.status(201).json(Taller);
+        //Creación de fila en la segunda tabla
+        const tallerInfo = await db.DatosTaller.create({
+            ID_TALLER: taller.ID_Taller,  //Se usara la ID del taller generado en la primera tabla
+            estado: true,
+            descripcion: req.body.descripcion,
+            //Por el momento la imagen se salteara hasta tener el front
+            fecha: req.body.fecha,
+            horario: req.body.horario,
+            admin_ID: req.body.admin_ID
+        });
+
+        //Respuesta que regresara la info de las filas creadas
+        res.status(201).json({
+            taller: taller,
+            tallerInfo: tallerInfo
+        });
+
     }catch(error){
         res.status(500).json({error: "Error al intentar crear el taller"});
     }
 };
+
 
 //Obtiene la información de un taller
 const getTaller = async (req, res) => {
@@ -127,5 +144,7 @@ const vistaTaller = async (req, res) => {
     }
 }
 
+
+
 //Comando para correr el docker "docker compose up --build -d"
-module.exports = {createTaller, getTaller, updateTaller, deleteTaller, listaTalleres, vistaTaller};
+module.exports = {crearTaller, getTaller, updateTaller, deleteTaller, listaTalleres, vistaTaller};
