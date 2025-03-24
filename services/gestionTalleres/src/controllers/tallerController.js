@@ -11,9 +11,9 @@ const crearTaller = async (req, res) => {
         //Creación de fila en la segunda tabla
         const tallerInfo = await db.DatosTaller.create({
             ID_TALLER: taller.ID_Taller,  //Se usara la ID del taller generado en la primera tabla
-            estado: true,
+            estado: true, //Siempre que se cree el taller va a estar disponible
             descripcion: req.body.descripcion,
-            //Por el momento la imagen se salteara hasta tener el front
+            //Por el momento la imagen se salteara hasta tener el front (Se colocara aquí la linea de código)
             fecha: req.body.fecha,
             horario: req.body.horario,
             admin_ID: req.body.admin_ID
@@ -31,7 +31,7 @@ const crearTaller = async (req, res) => {
 };
 
 
-//Obtiene la información de un taller
+//Obtiene la información de un taller (Solo la primera tabla, metodo de prueba)
 const getTaller = async (req, res) => {
     try {
         const id = req.params.id; //Obtenemos el ID de los parámetros de la URL
@@ -49,9 +49,29 @@ const getTaller = async (req, res) => {
     }
 }
 
-//Solo prueba
-const updateTaller = async (req, res) => {
-    res.send("Taller actualizado");
+//Actualiza la descripción del taller (Solo para talleristas)
+const actualizarDes = async (req, res) => {
+    try{
+        const {ID_TALLER} = req.body
+        const {descripcion} = req.body //Se obtiene la descripción del JSON
+
+        const taller = await db.DatosTaller.findOne({ where: { ID_TALLER: ID_TALLER } });
+
+        if(!taller){
+            res.status(404).json({error: "Taller no encontrado"})
+        }
+
+        //Aqui cambia la descripción donde este el ID_TALLER en la BD
+        await db.DatosTaller.update(
+            {descripcion}, //Solo pongo descripción ya que ambos se llaman igual y asi simplicar descripcion : descripcion
+            {where: {ID_TALLER}} //Lo mismo aqui se evita ser redundante (ID_TALLER: ID_TALLER)
+        );
+
+        res.status(200).json("Descripción actualizada correctamente")
+
+    }catch(error){
+        res.status(500).json({error: "Error al cambiar la desscripción del taller"})
+    }
 }
 
 //Elimina un taller de las 2 tablas
@@ -69,9 +89,11 @@ const deleteTaller = async (req, res) => {
             return res.status(404).json({ error: "Taller no encontrado en ninguna de las tablas" });
         }
 
-        // Primero eliminar en la tabla con la clave foránea
-        if (tallerDatos) await tallerDatos.destroy();
-        if (taller) await taller.destroy();
+        //Primero eliminar en la tabla con la clave foránea
+        if (tallerDatos) 
+            await tallerDatos.destroy();
+        if (taller) 
+            await taller.destroy();
 
         return res.status(200).json({ message: "Taller eliminado correctamente" });
     }catch (error) {
@@ -137,14 +159,14 @@ const vistaTaller = async (req, res) => {
             admin_ID: taller.datosTaller.admin_ID
         };
 
-        res.status(200).json(tallerInfo); //Se envian los datos completos del taller
+         res.status(200).json(tallerInfo); //Se envian los datos completos del taller
 
     }catch(error){
-        res.status(500).json("Error al obtener los datos del taller")
+         res.status(500).json("Error al obtener los datos del taller")
     }
 }
 
 
 
 //Comando para correr el docker "docker compose up --build -d"
-module.exports = {crearTaller, getTaller, updateTaller, deleteTaller, listaTalleres, vistaTaller};
+module.exports = {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller};
