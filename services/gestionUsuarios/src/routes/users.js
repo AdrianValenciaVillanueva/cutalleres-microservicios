@@ -5,7 +5,7 @@ const express = require('express');
 const {createUser, getUsers,loginUser, updateUser, deleteUser,dataUser} = require('../controllers/usersController');
 
 //importar el middleware
-const authenticateUsers = require('../../middlewares/authenticateUsers');
+const authenticateUsers = require('../middlewares/authenticateUsers');
 //crear el router
 const router = express.Router();
 

@@ -1,18 +1,29 @@
 const db = require('../../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
 const createUser = async (req, res) => {
     try{
+        //validacion basica de los datos
+        if(!req.body.codigo_udg || !req.body.correo || !req.body.contrasena){
+            return res.status(400).json({error: "todos los datos son requeridos"});
+        }
+
         const hashedPassword = await bcrypt.hash(req.body.contrasena, 10);
         const usuario = await db.Usuario.create({
             codigo_udg: req.body.codigo_udg,
             correo: req.body.correo,
-            contrasena: hashedPassword
+            contrasena: hashedPassword,
+            rol: req.body.rol || 'user'
         });
         const {contrasena, ...userWithoutPassword} = usuario.toJSON();
-        res.status(201).json(userWithoutPassword);
+        return res.status(201).json(userWithoutPassword);
     }catch(error){
-        res.status(500).json({error: "Error al crear usuario"});
+        console.log(error);
+        if(error.name === 'SequelizeUniqueConstraintError'){
+            return res.status(409).json({error: 'El usuario ya existe'});
+        }
+        return res.status(500).json({error: "Error al crear usuario"});
     }
 };
 
@@ -27,6 +38,11 @@ const getUsers = async (req, res) => {
 
 const loginUser = async (req,res) => {
     try{
+        //validacion basica de los datos
+        if(!req.body.codigo_udg || !req.body.contrasena){
+            return res.status(400).json({error: "Codigo UDG y contraseña son requeridos"});
+        }
+
         const usuario = await db.Usuario.scope('withPassword').findOne(
             {
                where:{
@@ -43,38 +59,53 @@ const loginUser = async (req,res) => {
         if(contrasenaValida){
             const { contrasena, ...userWithoutPassword } = usuario.toJSON();//desestructacion del objeto usuario para ocultar la contrasena
             //crear token
-            const token = jwt.sign(userWithoutPassword, process.env.JWT_SECRET, {expiresIn: '1h'});
-
-            res.setHeader('Authorization', `Bearer ${token}`);
-            return res.status(200).json(userWithoutPassword);
+            const token = jwt.sign(
+                userWithoutPassword,
+                process.env.JWT_SECRET, 
+                {
+                    expiresIn: '1h',
+                    issuer: 'gestionUsuarios-api'
+                });
+            //enviar respuesta
+            return res.status(200).json({
+                user: userWithoutPassword,
+                token: token
+            });
+            
         }else{
             return res.status(401).json({error: "Contraseña incorrecta"});
         }
 
     }catch(error){
-        console.log(error);
-        return res.status(500).json({error: "Error al obtener usuario"});
+        console.log("Error en el:",error);
+        return res.status(500).json({error: "Error al procesar la solicitud"});
     }
 }
 
 const updateUser = async (req, res) => {
     try{
+
+        const codigoUdg = req.user.codigo_udg;
+
         const usuario = await db.Usuario.scope("withPassword").findOne({
             where:{
-                codigo_udg: req.body.codigo_udg
+                codigo_udg: codigoUdg
             }
         });
+
         if(!usuario){
             return res.status(404).json({error: "Usuario no encontrado"});
         }
-        
-        const updates = {
-            correo: req.body.correo,
-            codigo_udg: req.body.codigo_udg
-        };
+
+        //datos a actualizar
+        const updates = {};
+
+
+        if(req.body.correo){
+            updates.correo = req.body.correo;
+        }
         if(req.body.contrasena){
-            const hashedPassword = await bcrypt.hash(req.body.contrasena, 10);
-            updates.contrasena = hashedPassword;
+            updates.contrasena = await bcrypt.hash(req.body.contrasena, 10);
         }
 
         await usuario.update(updates);
@@ -83,61 +114,127 @@ const updateUser = async (req, res) => {
         return res.status(200).json(userWithoutPassword);
     
     }catch(error){
-        console.log(error);
+        console.log("Error al actualizar usuario:",error);
         return res.status(500).json({error: "Error al actualizar usuario"});
     }
 }
 
 const deleteUser = async (req, res) => {
     try{
+
+        //validar que sea admin si no solo se puede eliminar asimismo
+        const codigoUdg = req.user.rol === 'admin'
+            ? req.body.codigo_udg
+            : req.user.codigo_udg;
+
         const usuario = await db.Usuario.findOne({
             where:{
-                codigo_udg: req.body.codigo_udg
+                codigo_udg: codigoUdg
             }
         });
+
+        if(!usuario){
+            return res.status(404).json({error: "Usuario no encontrado"});
+        }
+
+        //eliminar informacion asociada al usuario
         const infoUsuario = await db.Registro.findOne({
             where:{
-                codigo_udg: req.body.codigo_udg
+                codigo_udg: codigoUdg
             }
         });
-        if(usuario){
-            await usuario.destroy();
-            return res.status(204).send();
-        }
         if(infoUsuario){
             await infoUsuario.destroy();
         }
-        return res.status(404).json({error: "Usuario no encontrado"});
         
-        
+        await usuario.destroy();
+        return res.status(200).json({message: "Usuario eliminado correctamente"});
         
     }catch(error){
-        console.log(error);
+        console.log("Error al eliminar usuario:",error);
         return res.status(500).json({error: "Error al eliminar usuario"});
     }
 }
 
-//metodos para llenar informacion de usuario
+//metodos para gurdar informacion adicional del usuario
 const dataUser = async (req,res) => {
-    try{
-        const fullName = req.body.nombre;
-        const  sex = req.body.sexo;
-        const  age = req.body.edad;
-        const  code = req.body.codigo_udg;
-
-        if(code){
-            const data = await db.Registro.create({
-                nombre: fullName,
-                sexo: sex,
-                edad: age,
-                codigo_udg: code
-            });
-            res.status(201).json(data);
+    try {
+        //validacion basica
+        if(!req.body.nombre || !req.body.sexo || !req.body.edad){
+            return res.status(400).json({error: "Nombre, sexo y edad son requeridos"});
         }
-    }catch(error){
-        
-        return res.status(500).json({error: error});
+
+        const codigoUdg = req.user.codigo_udg;
+
+        //verificar si ya existe informacion para este usuario
+        const existingInfo = await db.Registro.findOne({
+            where:{
+                codigo_udg: codigoUdg
+            }
+        });
+
+        if(existingInfo){
+            await existingInfo.update({
+                nombre: req.body.nombre,
+                sexo: req.body.sexo,
+                edad: req.body.edad
+            });
+            return res.status(200).json(existingInfo);
+        }
+
+        //crear nueva informacion
+        const newInfo = await db.Registro.create({
+            nombre: req.body.nombre,
+            sexo: req.body.sexo,
+            edad: req.body.edad,
+            codigo_udg: codigoUdg
+        });
+
+        return res.status(201).json(newInfo);
+    } catch(error) {
+        console.log("Error al guardar informacion del usuario:", error);
+        return res.status(500).json({error: "Error al guardar información del usuario"});
     }
 }
 
-module.exports = { createUser, getUsers,loginUser, updateUser, deleteUser,dataUser };
+//metodo para obtener informacion adicional del usuario
+const getUserDetails = async (req, res) => {
+    try{
+
+        const codigoUdg = req.user.codigo_udg;
+
+        const usuario = await db.Usuario.findOne({
+            where:{
+                codigo_udg: codigoUdg
+            }
+        });
+
+        if(!usuario){
+            return res.status(404).json({error: "Usuario no encontrado"});
+        }
+
+        const infoUsuario = await db.Registro.findOne({
+            where:{
+                codigo_udg: codigoUdg
+            }
+        });
+
+        return res.status(200).json({
+            usuario: usuario,
+            info: infoUsuario || null
+        });
+    }catch(error){
+        console.log("Error al obtener informacion del usuario:",error);
+        return res.status(500).json({error: "Error al obtener informacion del usuario"});
+    }
+}
+
+module.exports = { 
+        createUser,
+        getUsers,
+        loginUser,
+        updateUser,
+        deleteUser,
+        dataUser,
+        getUserDetails 
+    };
