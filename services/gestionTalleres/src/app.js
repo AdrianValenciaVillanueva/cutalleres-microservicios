@@ -10,7 +10,7 @@ const app = express();
 
 //middlewares
 app.use(cors({
-    origin: 'http://localhost:5173/', //Permitir solo solicitudes desde el frontend(localhost:5173)
+    origin: 'http://localhost:5173', //Permitir solo solicitudes desde el frontend(localhost:5173)
     methods: ['GET', 'POST', 'DELETE'], //Métodos que se permite
 }));
 app.use(express.json());//para que entienda json
