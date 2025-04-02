@@ -9,7 +9,10 @@ const GestionTallerRoute = require('./routes/taller')
 const app = express();
 
 //middlewares
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173/', //Permitir solo solicitudes desde el frontend(localhost:5173)
+    methods: ['GET', 'POST', 'DELETE'], //Métodos que se permite
+}));
 app.use(express.json());//para que entienda json
 
 //rutas
