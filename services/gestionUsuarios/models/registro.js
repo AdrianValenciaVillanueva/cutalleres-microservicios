@@ -3,11 +3,12 @@ module.exports = (sequelize, DataTypes) => {
     const Registro = sequelize.define('Registro', {
       id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        unique: true,
       },
       codigo_udg: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: true,
       },
       nombre: {
