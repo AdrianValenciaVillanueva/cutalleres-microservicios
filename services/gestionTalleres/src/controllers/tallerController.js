@@ -166,7 +166,39 @@ const vistaTaller = async (req, res) => {
     }
 }
 
+//Metodo para dar de baja un taller
+const bajaTaller = async (req, res) => {
+    try{
+        const id = req.body.ID_Taller;
+
+        //Buscar en las tabla "DatosTaller" la fila con el id obtenido
+        const datosTaller = await db.DatosTaller.findOne({
+            where: {ID_Taller: id}
+        });
+
+        if (!datosTaller) {
+            return res.status(404).json({ error: "Taller no encontrado" });
+        }
+
+        if (datosTaller.estado === false) {
+            return res.status(400).json({ error: "El taller ya estaba dado de baja." });
+        }
+
+        await datosTaller.update({ 
+            estado: false 
+        });
+
+        return res.status(200).json({ message: "Taller dado de baja correctamente" });
+
+    }catch(error){
+        res.status(500).json("Error al tratar de dar de baja el taller")
+        details: error.message 
+    }
+}
 
 
-//Comando para correr el docker "docker compose up --build -d"
-module.exports = {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller};
+
+//El comando para correr el docker "docker compose up --build -d"
+
+//Se exportan los metodos, si no no se detectaran en otros archivos
+module.exports = {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller, bajaTaller};
