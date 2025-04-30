@@ -229,6 +229,37 @@ const getUserDetails = async (req, res) => {
     }
 }
 
+//Cambio de Rol Usuario - Tallerista
+
+const roleChange = async (req, res) => {
+    try{
+        const codigo = req.body.codigo_udg;
+
+        const usuario = await db.Usuario.findOne({
+            where: {codigo_udg: codigo}
+        });
+
+        if(!usuario){
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        if(usuario.rol === "tallerista"){
+            return res.status(404).json({error: "El usuario ya era tallerista"});
+        }
+
+        await usuario.update({
+            rol: "tallerista"
+        });
+
+        return res.status(200).json({ message: "Rol cambiado a tallerista correctamente" });
+
+            
+    }catch(error){
+        res.status(500).json({error: "Error al intentar cambiar de rol al usuario"});
+    }
+
+}
+
+
 module.exports = { 
         createUser,
         getUsers,
@@ -236,5 +267,6 @@ module.exports = {
         updateUser,
         deleteUser,
         dataUser,
-        getUserDetails 
+        getUserDetails,
+        roleChange
     };

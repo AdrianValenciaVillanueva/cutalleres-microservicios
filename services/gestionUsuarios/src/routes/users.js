@@ -2,7 +2,7 @@
 const express = require('express');
 
 //obtener el controlador
-const {createUser, getUsers,loginUser, updateUser, deleteUser,dataUser} = require('../controllers/usersController');
+const {createUser, getUsers,loginUser, updateUser, deleteUser,dataUser, roleChange} = require('../controllers/usersController');
 
 //importar el middleware
 const authenticateUsers = require('../middlewares/authenticateUsers');
@@ -15,6 +15,7 @@ router.post('/login', loginUser);
 router.get('/getall', authenticateUsers,getUsers);
 router.patch('/update', authenticateUsers,updateUser);
 router.delete('/delete', authenticateUsers,deleteUser);
+router.patch('/roleChange', roleChange);
 
 router.post('/addInfo',dataUser );
 
