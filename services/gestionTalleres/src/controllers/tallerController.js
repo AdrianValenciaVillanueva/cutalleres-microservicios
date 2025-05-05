@@ -119,7 +119,7 @@ const listaTalleres = async (req, res) => {
         const talleresData = talleres.map(taller => ({
             id: taller.ID_Taller,
             nombre: taller.nombre_taller,
-            estado: taller.datosTaller?.estado ? "Activo" : "Inactivo",
+            concluido: taller.datosTaller?.estado ? "Finalizado" : "Activo",
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
         }));
