@@ -2,7 +2,7 @@
 const express = require('express');
 
 //Obtener el controlador
-const {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller, bajaTaller} = require('../controllers/tallerController');
+const {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller, bajaTaller, concluirTaller} = require('../controllers/tallerController');
 
 //Se crea el router
 const router = express.Router();
@@ -15,5 +15,5 @@ router.delete('/deleteTaller', deleteTaller);
 router.get("/listaTalleres", listaTalleres);
 router.get("/vistaTaller", vistaTaller);
 router.patch('/bajaTaller', bajaTaller);
-
+router.patch('/concluirTaller',concluirTaller)
 module.exports = router;

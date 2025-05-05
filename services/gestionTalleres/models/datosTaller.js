@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true
       },
+      concluido:{
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+      },
       imagen: {
         type: DataTypes.BLOB('long'), //Especificación del BLOB
         allowNull: true
