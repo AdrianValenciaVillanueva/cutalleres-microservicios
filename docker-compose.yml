@@ -3,7 +3,7 @@
 services:
   # Servicio de base de datos para usuarios
   mysql:
-    image: mysql:8
+    image: adrianvalvi/mysql-usuarios:con-datos
     container_name: mysql-usuarios
     restart: always
     environment:
