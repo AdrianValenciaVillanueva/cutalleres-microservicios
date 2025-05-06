@@ -16,6 +16,7 @@ router.get('/getall', authenticateUsers,getUsers);
 router.patch('/update', authenticateUsers,updateUser);
 router.delete('/delete', authenticateUsers,deleteUser);
 router.post('/addInfo',authenticateUsers,dataUser );
+router.patch('/roleChange', authenticateUsers, roleChange);
 
 module.exports = router;
 
