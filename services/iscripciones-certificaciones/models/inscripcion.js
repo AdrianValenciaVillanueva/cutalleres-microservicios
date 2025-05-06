@@ -1,31 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
     const Inscripcion = sequelize.define('Inscripcion', {
-        id: {
+        ID_inscripcion: {  // Cambia 'id' por 'ID_inscripcion'
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        usuario_id: {
+        Codigo_alumno: {  // Cambia 'usuario_id' por 'Codigo_alumno'
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        taller_id: {
+        ID_taller: {  // Cambia 'taller_id' por 'ID_taller'
             type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        fecha_inscripcion: {
-            type: DataTypes.DATEONLY,
             allowNull: false
         }
     }, {
-        tableName: 'inscripciones',
+        tableName: 'Inscripciones',  // Usa el mismo nombre que MySQL
         timestamps: false
     });
-
-    Inscripcion.associate = (models) => {
-        Inscripcion.belongsTo(models.Usuario, { foreignKey: 'usuario_id' });
-        Inscripcion.belongsTo(models.Taller, { foreignKey: 'taller_id' });
-    };
 
     return Inscripcion;
 };

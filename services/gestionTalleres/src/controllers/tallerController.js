@@ -13,6 +13,7 @@ const crearTaller = async (req, res) => {
             ID_TALLER: taller.ID_Taller,  //Se usara la ID del taller generado en la primera tabla
             estado: true, //Siempre que se cree el taller va a estar disponible
             descripcion: req.body.descripcion,
+            concluido: false,
             //Por el momento la imagen se salteara hasta tener el front (Se colocara aquí la linea de código)
             fecha: req.body.fecha,
             horario: req.body.horario,
@@ -118,7 +119,7 @@ const listaTalleres = async (req, res) => {
         const talleresData = talleres.map(taller => ({
             id: taller.ID_Taller,
             nombre: taller.nombre_taller,
-            estado: taller.datosTaller?.estado ? "Activo" : "Inactivo",
+            concluido: taller.datosTaller?.estado ? "Finalizado" : "Activo",
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
         }));
@@ -151,8 +152,9 @@ const vistaTaller = async (req, res) => {
         const tallerInfo = {
             id: taller.ID_Taller,
             nombre: taller.nombre_taller,
-            estado: taller.datosTaller.estado ? "Activo" : "Inactivo", //Si es true o false
+            estado: taller.datosTaller.estado ? "Alta" : "Baja", //Si es true o false
             descripcion: taller.datosTaller.descripcion,
+            concluido: taller.datosTaller.concluido ? "Concluido" : "Taller",
             imagen: taller.datosTaller?.imagen, //Por el momento la imagen es opcional, no marcara error
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
@@ -166,7 +168,66 @@ const vistaTaller = async (req, res) => {
     }
 }
 
+//Metodo para dar de baja un taller
+const bajaTaller = async (req, res) => {
+    try{
+        const id = req.body.ID_Taller;
+
+        //Buscar en las tabla "DatosTaller" la fila con el id obtenido
+        const datosTaller = await db.DatosTaller.findOne({
+            where: {ID_Taller: id}
+        });
+
+        if (!datosTaller) {
+            return res.status(404).json({ error: "Taller no encontrado" });
+        }
+
+        if (datosTaller.estado === false) {
+            return res.status(400).json({ error: "El taller ya estaba dado de baja." });
+        }
+
+        await datosTaller.update({ 
+            estado: false 
+        });
+
+        return res.status(200).json({ message: "Taller dado de baja correctamente" });
+
+    }catch(error){
+        res.status(500).json("Error al tratar de dar de baja el taller")
+        details: error.message 
+    }
+}
+
+//Metodo para finalizar un taller
+const concluirTaller = async(req,res) => {
+    try{
+        const id = req.body.ID_Taller;
+
+        const datosTaller = await db.DatosTaller.findOne({
+            where:{ ID_Taller: id}
+        })
+
+        if (!datosTaller) {
+            return res.status(404).json({ error: "Taller no encontrado" });
+        }
+
+        if (datosTaller.concluido === true) {
+            return res.status(400).json({ error: "El taller ya se habia registrado como concluido" });
+        }
+
+        await datosTaller.update({ 
+            concluido: true 
+        });
+
+        return res.status(200).json({ message: "Taller concluido correctamente, SUBA LOS CERTIFICADOS" });
+    }catch(error){
+
+    }
+}
 
 
-//Comando para correr el docker "docker compose up --build -d"
-module.exports = {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller};
+
+//El comando para correr el docker "docker compose up --build -d"
+
+//Se exportan los metodos, si no no se detectaran en otros archivos
+module.exports = {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller, bajaTaller, concluirTaller};

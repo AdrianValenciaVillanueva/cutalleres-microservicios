@@ -62,7 +62,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: inscripciones_certificaciones
+      MYSQL_DATABASE: iscripciones-certificados
       MYSQL_USER: usuario
       MYSQL_PASSWORD: password
     ports:
