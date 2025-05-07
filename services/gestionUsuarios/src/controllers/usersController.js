@@ -57,18 +57,31 @@ const loginUser = async (req,res) => {
         const contrasenaValida = await bcrypt.compare(req.body.contrasena, usuario.contrasena);
 
         if(contrasenaValida){
-            const { contrasena, ...userWithoutPassword } = usuario.toJSON();//desestructacion del objeto usuario para ocultar la contrasena
-            //crear token
+            const { contrasena, ...userWithoutPassword } = usuario.toJSON();
+
+            // Obtener la información adicional del usuario
+            const infoUsuario = await db.Registro.findOne({
+                where: { codigo_udg: usuario.codigo_udg }
+            });
+
+            // Unir la información adicional al payload del token
+            const payload = {
+                ...userWithoutPassword,
+                info: infoUsuario ? infoUsuario.toJSON() : null
+            };
+
+            //crear token con el payload extendido
             const token = jwt.sign(
-                userWithoutPassword,
+                payload,
                 process.env.JWT_SECRET, 
                 {
                     expiresIn: '1h',
                     issuer: 'gestionUsuarios-api'
                 });
+
             //enviar respuesta
             return res.status(200).json({
-                user: userWithoutPassword,
+                user: payload,
                 token: token
             });
             
@@ -197,37 +210,6 @@ const dataUser = async (req,res) => {
     }
 }
 
-//metodo para obtener informacion adicional del usuario
-const getUserDetails = async (req, res) => {
-    try{
-
-        const codigoUdg = req.user.codigo_udg;
-
-        const usuario = await db.Usuario.findOne({
-            where:{
-                codigo_udg: codigoUdg
-            }
-        });
-
-        if(!usuario){
-            return res.status(404).json({error: "Usuario no encontrado"});
-        }
-
-        const infoUsuario = await db.Registro.findOne({
-            where:{
-                codigo_udg: codigoUdg
-            }
-        });
-
-        return res.status(200).json({
-            usuario: usuario,
-            info: infoUsuario || null
-        });
-    }catch(error){
-        console.log("Error al obtener informacion del usuario:",error);
-        return res.status(500).json({error: "Error al obtener informacion del usuario"});
-    }
-}
 
 //Cambio de Rol Usuario - Tallerista
 
