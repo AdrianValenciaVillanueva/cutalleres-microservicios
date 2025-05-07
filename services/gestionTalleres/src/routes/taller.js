@@ -13,7 +13,7 @@ router.get('/getTaller/:id', getTaller);
 router.patch('/actualizarDes', actualizarDes);
 router.delete('/deleteTaller', deleteTaller);
 router.get("/listaTalleres", listaTalleres);
-router.get("/vistaTaller", vistaTaller);
+router.post("/vistaTaller", vistaTaller);
 router.patch('/bajaTaller', bajaTaller);
 router.patch('/concluirTaller',concluirTaller)
 module.exports = router;
