@@ -117,7 +117,7 @@ const listaTalleres = async (req, res) => {
 
        //Constante que tendra los datos de los talleres
         const talleresData = talleres.map(taller => ({
-            id: taller.ID_Taller,
+            ID_Taller: taller.ID_Taller,
             nombre: taller.nombre_taller,
             concluido: taller.datosTaller?.estado ? "Finalizado" : "Activo",
             fecha: taller.datosTaller.fecha,
@@ -134,6 +134,7 @@ const listaTalleres = async (req, res) => {
 //Vista de los detalles completos del taller 
 const vistaTaller = async (req, res) => {
     try{
+        console.log("Body recibido:", req.body);
         const {ID_Taller} = req.body //Se obtiene de la solicitud del JSON
 
         //Se busca el ID del taller en las tablas
