@@ -69,6 +69,7 @@ const loginUser = async (req,res) => {
                 ...userWithoutPassword,
                 info: infoUsuario ? infoUsuario.toJSON() : null
             };
+            console.log("Payload:", payload);
 
             //crear token con el payload extendido
             const token = jwt.sign(
@@ -249,6 +250,5 @@ module.exports = {
         updateUser,
         deleteUser,
         dataUser,
-        getUserDetails,
         roleChange
     };

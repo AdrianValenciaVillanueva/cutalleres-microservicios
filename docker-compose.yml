@@ -18,7 +18,7 @@ services:
 
   # Microservicio de gestión de usuarios
   gestionusuarios:
-    image: adrianvalvi/gestionusuarios:latest
+    build: ./services/gestionUsuarios
     container_name: gestionusuarios
     restart: always
     env_file:
