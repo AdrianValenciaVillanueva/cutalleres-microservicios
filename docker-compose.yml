@@ -72,7 +72,7 @@ services:
 
   # Microservicio de inscripciones y certificaciones
   inscripcionescertificaciones:
-    build: ./services/iscripciones-certificaciones
+    image: adrianvalvi/iscripciones-certificaciones:latest
     container_name: inscripcionescertificaciones
     restart: always
     env_file:
