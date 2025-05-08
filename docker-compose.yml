@@ -30,7 +30,7 @@ services:
 
   #Micrcoservicio de gestión de talleres
   gestion-talleres:
-    image: chavasrc/gestion-talleres
+    build: ./services/gestionTalleres
     container_name: gestion-talleres
     restart: always
     env_file:
