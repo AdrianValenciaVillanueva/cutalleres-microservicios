@@ -1,8 +1,10 @@
 const db = require('../../models'); //se selecciona la carpeta "models", donde se encuentran los modelos de las 2 tablas de la BD
+const upload = require('../uploadMiddleware');
 
 //Crea un taller
 const crearTaller = async (req, res) => {
     try{
+        const imagen = req.file ? req.file.buffer : null;
         //Creación de fila en la primera tabla
         const taller = await db.GestionTaller.create({
             nombre_taller: req.body.nombre_taller
@@ -14,7 +16,7 @@ const crearTaller = async (req, res) => {
             estado: true, //Siempre que se cree el taller va a estar disponible
             descripcion: req.body.descripcion,
             concluido: false,
-            //Por el momento la imagen se salteara hasta tener el front (Se colocara aquí la linea de código)
+            imagen: imagen,//Por el momento la imagen se salteara hasta tener el front (Se colocara aquí la linea de código)
             fecha: req.body.fecha,
             horario: req.body.horario,
             admin_ID: req.body.admin_ID
