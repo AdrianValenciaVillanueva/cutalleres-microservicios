@@ -21,8 +21,7 @@ services:
     image: adrianvalvi/gestionusuarios:latest
     container_name: gestionusuarios
     restart: always
-    env_file:
-      - ./services/gestionUsuarios/.env
+    
     ports:
       - "3001:3001"
     depends_on:
@@ -30,11 +29,9 @@ services:
 
   #Micrcoservicio de gestión de talleres
   gestion-talleres:
-    build: ./services/gestionTalleres
+    image: chavasrc/gestion-talleres:latest
     container_name: gestion-talleres
     restart: always
-    env_file:
-      - ./services/gestionTalleres/.env
     ports:
       - "3002:3002"
     depends_on:
@@ -75,8 +72,7 @@ services:
     image: adrianvalvi/iscripciones-certificaciones:latest
     container_name: inscripcionescertificaciones
     restart: always
-    env_file:
-      - ./services/iscripciones-certificaciones/.env
+    
     ports:
       - "3003:3003"
     depends_on:
