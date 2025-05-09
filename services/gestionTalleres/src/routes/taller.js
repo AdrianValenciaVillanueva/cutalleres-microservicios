@@ -4,7 +4,7 @@ const express = require('express');
 //Obtener el controlador
 const {crearTaller, getTaller, actualizarDes, deleteTaller, listaTalleres, vistaTaller, bajaTaller, concluirTaller} = require('../controllers/tallerController');
 //Es el middleware de las imagenes
-const upload = require('./uploadMiddleware');
+const upload = require('../uploadMiddleware');
 //Se crea el router
 const router = express.Router();
 

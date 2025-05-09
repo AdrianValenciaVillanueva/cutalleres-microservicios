@@ -108,16 +108,14 @@ const deleteTaller = async (req, res) => {
 //Muestra los datos de las targetas de la página "lista de talleres" / Falta agregar la imagen
 const listaTalleres = async (req, res) => {
     try {
-        //Obtener talleres con su información de DatosTaller
         const talleres = await db.GestionTaller.findAll({
             include: {
                 model: db.DatosTaller,
-                as: 'datosTaller', //Se debe de usar este nombre para poder tomar datos de la tabla "datos-taller"
-                required: true //Solo tomará talleres que tengan datos en la otra tabla
+                as: 'datosTaller',
+                required: true
             }
         });
 
-       //Constante que tendra los datos de los talleres
         const talleresData = talleres.map(taller => ({
             ID_Taller: taller.ID_Taller,
             nombre: taller.nombre_taller,
@@ -125,8 +123,12 @@ const listaTalleres = async (req, res) => {
             estado: taller.datosTaller.estado,
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
+            imagen: taller.datosTaller.imagen 
+                ? `data:image/jpeg;base64,${taller.datosTaller.imagen.toString('base64')}`
+                : null
         }));
 
+        console.log("Datos mapeados para el front:", talleresData);
         return res.status(200).json(talleresData);
     } catch (error) {
         console.error(error);
@@ -134,42 +136,44 @@ const listaTalleres = async (req, res) => {
     }
 };
 
+
 //Vista de los detalles completos del taller 
 const vistaTaller = async (req, res) => {
-    try{
-        const {ID_Taller} = req.body; //Se obtiene de la solicitud del JSON
+    try {
+        const { ID_Taller } = req.body;
 
-        //Se busca el ID del taller en las tablas
         const taller = await db.GestionTaller.findOne({
-            where: {ID_Taller},
+            where: { ID_Taller },
             include: {
-                model: db.DatosTaller, //Modelo de la BD
-                as: 'datosTaller' //Relacion definida al modelo
+                model: db.DatosTaller,
+                as: 'datosTaller'
             }
         });
 
-        if(!taller) //Si no se encuentra el taller solicitado
+        if (!taller) {
             return res.status(404).json({ error: "Taller no encontrado" });
+        }
 
-        //Respuesta de la solicitud, solo si se encontro
         const tallerInfo = {
             id: taller.ID_Taller,
             nombre: taller.nombre_taller,
-            estado: taller.datosTaller.estado ? "Alta" : "Baja", //Si es true o false
+            estado: taller.datosTaller.estado ? "Alta" : "Baja",
             descripcion: taller.datosTaller.descripcion,
             concluido: taller.datosTaller.concluido ? "Concluido" : "Taller",
-            imagen: taller.datosTaller?.imagen, //Por el momento la imagen es opcional, no marcara error
+            imagen: taller.datosTaller.imagen 
+                ? `data:image/jpeg;base64,${taller.datosTaller.imagen.toString('base64')}`
+                : null,
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
             admin_ID: taller.datosTaller.admin_ID
         };
 
-         res.status(200).json(tallerInfo); //Se envian los datos completos del taller
+        res.status(200).json(tallerInfo);
 
-    }catch(error){
-         res.status(500).json("Error al obtener los datos del taller")
+    } catch (error) {
+        res.status(500).json("Error al obtener los datos del taller");
     }
-}
+};
 
 //Metodo para dar de baja un taller
 const bajaTaller = async (req, res) => {
