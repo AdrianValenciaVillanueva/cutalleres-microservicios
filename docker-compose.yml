@@ -29,17 +29,19 @@ services:
 
   #Micrcoservicio de gestión de talleres
   gestion-talleres:
-    image: chavasrc/gestion-talleres:latest
+    build: ./services/gestionTalleres
     container_name: gestion-talleres
     restart: always
+    env_file:
+      - ./services/gestionTalleres/.env
     ports:
       - "3002:3002"
     depends_on:
-      - mysql2    
+      - mysql2          
   
   # Servicio de base de datos para gestion de talleres
   mysql2: 
-    image: chavasrc/mysql-gestion-talleres:con-datos
+    image: mysql
     container_name: mysql-gestion-talleres
     restart: always
     environment:
