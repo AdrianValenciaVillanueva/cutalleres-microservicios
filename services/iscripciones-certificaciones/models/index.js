@@ -11,5 +11,8 @@ db.sequelize = sequelize;
 db.Inscripcion = require('./inscripcion')(sequelize, Sequelize.DataTypes);
 db.Certificacion = require('./certificacion')(sequelize, Sequelize.DataTypes);
 
+// Definir relaciones
+db.Certificacion.belongsTo(db.Inscripcion, { foreignKey: 'ID_inscripcion' });
+db.Inscripcion.hasMany(db.Certificacion, { foreignKey: 'ID_inscripcion' });
 
 module.exports = db;
