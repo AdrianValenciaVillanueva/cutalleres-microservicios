@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const certificacionesController = require('../controllers/certificacionesController');
-const upload = require('../config/multerConfig'); // Importar configuración de multer
+const upload = require('../../config/multerConfig'); // Importar configuración de multer
 
 // Obtener todas las certificaciones
 router.get('/', certificacionesController.getAllCertificaciones);

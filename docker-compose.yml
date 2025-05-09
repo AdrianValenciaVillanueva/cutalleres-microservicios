@@ -57,7 +57,7 @@ services:
 
   # Servicio de base de datos para inscripciones
   mysql3:
-    image: mysql
+    image: adrianvalvi/mysql-inscripciones:con-datos
     container_name: mysql-inscripciones
     restart: always
     environment:
@@ -72,7 +72,7 @@ services:
 
   # Microservicio de inscripciones y certificaciones
   inscripcionescertificaciones:
-    build: ./services/iscripciones-certificaciones
+    image: adrianvalvi/iscripciones-certificaciones:latest
     container_name: inscripcionescertificaciones
     restart: always
     env_file:
