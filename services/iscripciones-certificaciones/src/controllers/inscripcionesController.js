@@ -1,4 +1,4 @@
-const { Inscripcion, Taller } = require('../../models');
+const { Inscripcion, Taller } = require('../models');
 
 const getAllInscripciones = async (req, res) => {
     try {

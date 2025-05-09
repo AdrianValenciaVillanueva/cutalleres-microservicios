@@ -21,7 +21,8 @@ services:
     image: adrianvalvi/gestionusuarios:latest
     container_name: gestionusuarios
     restart: always
-    
+    env_file:
+      - ./services/gestionUsuarios/.env
     ports:
       - "3001:3001"
     depends_on:
@@ -56,7 +57,7 @@ services:
 
   # Servicio de base de datos para inscripciones
   mysql3:
-    image: adrianvalvi/mysql-inscripciones:con-datos
+    image: mysql
     container_name: mysql-inscripciones
     restart: always
     environment:
@@ -71,10 +72,11 @@ services:
 
   # Microservicio de inscripciones y certificaciones
   inscripcionescertificaciones:
-    image: adrianvalvi/iscripciones-certificaciones:latest
+    build: ./services/iscripciones-certificaciones
     container_name: inscripcionescertificaciones
     restart: always
-    
+    env_file:
+      - ./services/iscripciones-certificaciones/.env
     ports:
       - "3003:3003"
     depends_on:
