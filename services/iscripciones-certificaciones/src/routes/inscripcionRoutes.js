@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const inscripcionesController = require('../../controllers/inscripcionesController');
+const inscripcionesController = require('../controllers/inscripcionesController');
 
 // Ruta para obtener talleres de un alumno (antes estaba duplicada)
 router.get('/alumno/:codigoAlumno', inscripcionesController.getTalleresByAlumno);
