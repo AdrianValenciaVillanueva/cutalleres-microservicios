@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const inscripcionRoutes = require('./routes/inscripcionRoutes');
-const db = require('./models');
+const db = require('../models');
 const certificacionRoutes = require("./routes/certificacionRoutes");
 
 
