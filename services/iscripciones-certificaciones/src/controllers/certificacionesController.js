@@ -1,4 +1,4 @@
-const { Certificacion, Inscripcion } = require('../../models'); // Importa desde index.js
+const { Certificacion, Inscripcion } = require('../models'); // Importa desde index.js
 const fs = require('fs');
 const path = require('path');
 
