@@ -123,6 +123,7 @@ const listaTalleres = async (req, res) => {
             estado: taller.datosTaller.estado,
             fecha: taller.datosTaller.fecha,
             horario: taller.datosTaller.horario,
+            admin_ID: taller.datosTaller.admin_ID,
             imagen: taller.datosTaller.imagen 
                 ? `data:image/jpeg;base64,${taller.datosTaller.imagen.toString('base64')}`
                 : null
@@ -231,6 +232,7 @@ const concluirTaller = async(req,res) => {
 
     }
 }
+
 
 
 
