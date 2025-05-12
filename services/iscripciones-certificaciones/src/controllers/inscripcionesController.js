@@ -101,11 +101,35 @@ const deleteInscripcion = async (req, res) => {
     }
 };
 
+const getAlumnosByTaller = async (req, res) => {
+    try {
+        const { idTaller } = req.params; // ID del taller desde la URL
+
+        // Buscar inscripciones relacionadas con el ID del taller
+        const inscripciones = await Inscripcion.findAll({
+            where: { ID_taller: idTaller },
+            attributes: ['Codigo_alumno'] // Solo selecciona el campo Codigo_alumno
+        });
+
+        if (!inscripciones.length) {
+            return res.status(404).json({ message: "No hay alumnos inscritos en este taller" });
+        }
+
+        // Extraer solo los códigos de alumno
+        const codigosAlumnos = inscripciones.map(inscripcion => inscripcion.Codigo_alumno);
+
+        res.status(200).json(codigosAlumnos);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     getAllInscripciones,
     getTalleresByAlumno,
     getInscripcionById,
     createInscripcion,
     updateInscripcion,
-    deleteInscripcion
+    deleteInscripcion,
+    getAlumnosByTaller
 };

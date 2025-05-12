@@ -2,7 +2,7 @@ const { Certificacion, Inscripcion } = require('../../models'); // Importa desde
 const fs = require('fs');
 const path = require('path');
 
-// Obtener todas las certificaciones
+//Obtener todas las certificaciones
 exports.getAllCertificaciones = async (req, res) => {
     try {
         const certificaciones = await Certificacion.findAll();
@@ -12,7 +12,7 @@ exports.getAllCertificaciones = async (req, res) => {
     }
 };
 
-// Obtener una certificación id
+//Obtener una certificación id
 exports.getCertificacionById = async (req, res) => {
     try {
         const certificacion = await Certificacion.findByPk(req.params.id);
@@ -26,15 +26,14 @@ exports.getCertificacionById = async (req, res) => {
     }
 };
 
-// Crear una nueva certificación
+//Crear una nueva certificación
 exports.createCertificacion = async (req, res) => {
     try {
         const { ID_inscripcion, estado, fecha_emision, Certificado } = req.body;
         const nuevaCertificacion = await Certificacion.create({
             ID_inscripcion,
             estado,
-            fecha_emision,
-            Certificado
+            fecha_emision
         });
         res.status(201).json(nuevaCertificacion);
     } catch (error) {
@@ -42,7 +41,7 @@ exports.createCertificacion = async (req, res) => {
     }
 };
 
-// Actualizar una certificación
+//Actualizar una certificación
 exports.updateCertificacion = async (req, res) => {
     try {
         const certificacion = await Certificacion.findByPk(req.params.id);
@@ -78,6 +77,7 @@ exports.subirCertificado = async (req, res) => {
         const { ID_inscripcion } = req.params; // ID de la inscripción desde la URL
         const pdfFile = req.file; // Archivo subido vía multer
 
+        // Verificar si se proporcionó un archivo
         if (!pdfFile) {
             return res.status(400).json({ error: "No se proporcionó ningún archivo PDF" });
         }
@@ -85,22 +85,23 @@ exports.subirCertificado = async (req, res) => {
         // Leer el archivo como buffer
         const pdfBuffer = fs.readFileSync(pdfFile.path);
 
-        // Crear o actualizar el registro en la tabla Certificacion
-        const certificado = await Certificacion.create({
-            ID_inscripcion,
-            estado: 'Generado',
-            fecha_emision: new Date(),
-            Certificado: pdfBuffer
-        });
+        // Actualizar el registro en la tabla Certificacion
+        const [updated] = await Certificacion.update(
+            { Certificado: pdfBuffer },
+            { where: { ID_inscripcion } }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ error: "Certificación no encontrada" });
+        }
 
         // Eliminar el archivo temporal
         fs.unlinkSync(pdfFile.path);
 
         res.status(201).json({
             message: "Certificado subido exitosamente",
-            ID_certificado: certificado.ID_certificado
+            ID_inscripcion
         });
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error al subir el certificado" });
@@ -110,27 +111,35 @@ exports.subirCertificado = async (req, res) => {
 // Descargar certificado PDF basado en Codigo_alumno
 exports.descargarCertificado = async (req, res) => {
     try {
-        const { Codigo_alumno } = req.params; // Código del alumno desde la URL
+        const { ID_inscripcion } = req.params; // ID de la inscripción desde la URL
 
-        // Buscar la certificación por Codigo_alumno
+        // Buscar el certificado asociado al ID_inscripcion
         const certificado = await Certificacion.findOne({
-            include: {
-                model: Inscripcion,
-                where: { Codigo_alumno }
-            }
+            where: { ID_inscripcion }
         });
 
         if (!certificado || !certificado.Certificado) {
             return res.status(404).json({ error: "Certificado no encontrado" });
         }
 
+        if (certificado.estado !== "Generado") {
+            return res.status(400).json({ error: "El certificado no está en estado 'Generado'" });
+        }
+
+        // Convertir el buffer a un archivo PDF (opcional, si necesitas inspeccionarlo)
+        const pdfBuffer = Buffer.from(certificado.Certificado);
+        const filePath = `certificado_${ID_inscripcion}.pdf`;
+
+        // Si deseas guardar el archivo temporalmente para inspección
+        // const fs = require('fs');
+        // fs.writeFileSync(filePath, pdfBuffer);
+
         // Configurar headers para la descarga
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=certificado_${Codigo_alumno}.pdf`);
-        
-        // Enviar el buffer como archivo
-        res.send(certificado.Certificado);
+        res.setHeader('Content-Disposition', `attachment; filename=${filePath}`);
 
+        // Enviar el buffer como archivo
+        res.send(pdfBuffer);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error al descargar el certificado" });

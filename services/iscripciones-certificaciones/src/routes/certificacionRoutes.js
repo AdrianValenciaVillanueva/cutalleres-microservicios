@@ -1,7 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const certificacionesController = require('../controllers/certificacionesController');
-const upload = require('../../config/multerConfig'); // Importar configuración de multer
+const multer = require('multer');
+
+// Configuración de multer para manejar la subida de archivos
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Carpeta donde se guardarán los PDFs temporalmente
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage });
 
 // Obtener todas las certificaciones
 router.get('/', certificacionesController.getAllCertificaciones);
@@ -22,6 +33,7 @@ router.delete('/:id', certificacionesController.deleteCertificacion);
 router.post('/subir/:ID_inscripcion', upload.single('pdf'), certificacionesController.subirCertificado);
 
 // Ruta para descargar un certificado basado en Codigo_alumno
-router.get('/descargar/:Codigo_alumno', certificacionesController.descargarCertificado);
+router.get('/descargar/:ID_inscripcion', certificacionesController.descargarCertificado);
+
 
 module.exports = router;
